@@ -1,0 +1,114 @@
+/* 기본 스타일 */
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: white;
+}
+
+/* 네비게이션 스타일 */
+.navbar {
+    background-color: #FFFAF5;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.custom-navbar {
+    background-color: #FFFAF5;
+}
+
+.navbar-light .navbar-brand,
+.navbar-light .navbar-nav .nav-link {
+    color: #3F3F3F;
+}
+
+.navbar-light .navbar-brand:hover,
+.navbar-light .navbar-nav .nav-link:hover {
+    color: #FF7710;
+}
+
+.navbar-light .navbar-toggler {
+    border-color: rgba(63, 63, 63, 0.5);
+}
+
+.navbar-light .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2863, 63, 63, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* 카드 스타일 */
+.card {
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    margin-bottom: 20px;
+    background-color: white;
+}
+
+.card-header {
+    background-color: #FF7710;
+    color: white;
+    font-weight: 600;
+}
+
+/* 알림 메시지 스타일 */
+.alert-info {
+    background-color: #FFFAF5;
+    border-color: #FF7710;
+    color: #3F3F3F;
+}
+
+/* 폼 요소 스타일 */
+.form-control:focus {
+    border-color: #FF7710;
+    box-shadow: 0 0 0 0.25rem rgba(255, 119, 16, 0.25);
+}
+
+textarea.form-control {
+    min-height: 150px;
+}
+
+/* 버튼 스타일 */
+.btn-primary {
+    background-color: #FF7710;
+    border-color: #FF7710;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: #e66a09 !important;
+    border-color: #e66a09 !important;
+}
+
+/* 테이블 스타일 */
+.table th {
+    background-color: #3F3F3F;
+    color: white;
+}
+
+/* 평가 결과 스타일 */
+.progress {
+    height: 25px;
+    margin-bottom: 10px;
+}
+
+.progress-bar {
+    line-height: 25px;
+    font-weight: 600;
+    background-color: #FF7710;
+}
+
+/* 푸터 스타일 */
+.footer,
+.custom-footer {
+    margin-top: 2rem;
+    padding: 1rem 0;
+    color: #3F3F3F;
+    background-color: #FFFAF5;
+}
+
+.custom-footer .text-muted {
+    color: #3F3F3F !important;
+}
+
+/* 반응형 조정 */
+@media (max-width: 768px) {
+    .table {
+        font-size: 0.9rem;
+    }
+}

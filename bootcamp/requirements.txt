@@ -1,0 +1,9 @@
+Flask
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+Werkzeug
+gunicorn
+python-dotenv

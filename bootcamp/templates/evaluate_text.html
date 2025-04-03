@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}부트캠프 지원서 평가 시스템 - 텍스트 평가{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <div class="card">
+            <div class="card-header">
+                <h3>지원서 텍스트 평가</h3>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    단일 지원서 텍스트를 입력하여 평가 결과를 바로 확인합니다.
+                </p>
+                
+                <form method="POST" class="mt-4">
+                    <div class="mb-3">
+                        <label for="text" class="form-label">지원서 텍스트</label>
+                        <textarea class="form-control" id="text" name="text" rows="10" required placeholder="여기에 지원서 내용을 입력하세요..."></textarea>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">평가하기</button>
+                    </div>
+                </form>
+                
+                {% if result %}
+                    <div class="mt-5">
+                        <h4>평가 결과</h4>
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>종합 평가</span>
+                                    <span class="badge {% if result.score >= threshold %}bg-success{% else %}bg-danger{% endif %}">
+                                        {{ "%.2f"|format(result.score) }} / {{ "%.2f"|format(threshold) }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>{{ result.evaluation }}</strong></p>
+                                <p>{{ result.recommendation }}</p>
+                                
+                                <div class="progress mb-3">
+                                    <div class="progress-bar {% if result.score >= threshold %}bg-success{% else %}bg-danger{% endif %}" 
+                                        role="progressbar" 
+                                        style="width: {{ (result.score/max(threshold*2, 1))*100 }}%;" 
+                                        aria-valuenow="{{ result.score }}" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="{{ threshold*2 }}">
+                                        {{ "%.2f"|format(result.score) }}
+                                    </div>
+                                </div>
+                                
+                                <div class="progress mb-3">
+                                    <div class="progress-bar {% if result.rf_probability >= 0.5 %}bg-success{% else %}bg-danger{% endif %}" 
+                                        role="progressbar" 
+                                        style="width: {{ result.rf_probability*100 }}%;" 
+                                        aria-valuenow="{{ result.rf_probability }}" 
+                                        aria-valuemin="0" 
+                                        aria-valuemax="1">
+                                        {{ "%.2f"|format(result.rf_probability) }}
+                                    </div>
+                                </div>
+                                
+                                {% if result.details %}
+                                    <h5 class="mt-4">상세 분석</h5>
+                                    <ul class="list-group">
+                                        {% for detail in result.details %}
+                                            <li class="list-group-item {% if detail.startswith('✓') %}list-group-item-success{% elif detail.startswith('✗') %}list-group-item-danger{% endif %}">
+                                                {{ detail }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                                
+                                {% if result.features %}
+                                    <h5 class="mt-4">텍스트 특성</h5>
+                                    <table class="table table-sm">
+                                        <tr>
+                                            <th>텍스트 길이</th>
+                                            <td>{{ result.features.length }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>문장 수</th>
+                                            <td>{{ result.features.sentence_count }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>평균 문장 길이</th>
+                                            <td>{{ "%.1f"|format(result.features.avg_sentence_length) }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>긍정적 단어 수</th>
+                                            <td>{{ result.features.positive_word_count }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>부정적 단어 수</th>
+                                            <td>{{ result.features.negative_word_count }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>기술 키워드 수</th>
+                                            <td>{{ result.features.tech_keyword_count }}</td>
+                                        </tr>
+                                    </table>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
