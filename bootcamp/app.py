@@ -175,4 +175,4 @@ def model_info():
 
 if __name__ == '__main__':
     # 호스트를 0.0.0.0으로 설정하면 로컬 네트워크에서 접근 가능
-    app.run(debug=True, host='0.0.0.0', port=8080)
+    app.run(debug=True, host='0.0.0.0', port=10000)
