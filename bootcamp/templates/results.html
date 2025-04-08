@@ -38,11 +38,11 @@
                                     </tr>
                                     <tr>
                                         <th>평균 점수</th>
-                                        <td>{{ "%.4f"|format(results.avg_score) }}</td>
+                                        <td>{{ "%.2f"|format(results.avg_score) }}</td>
                                     </tr>
                                     <tr>
                                         <th>임계값</th>
-                                        <td>{{ "%.4f"|format(threshold) }}</td>
+                                        <td>{{ "%.2f"|format(threshold) }}</td>
                                     </tr>
                                     {% if results.filter_mode is defined %}
                                     <tr>
@@ -65,29 +65,37 @@
                         </div>
                         
                         {% if results.top5 is defined and results.top5|length > 0 %}
-                            <div class="card mb-4">
-                                <div class="card-header">상위 5명 지원자</div>
-                                <div class="card-body">
-                                    <table class="table table-sm">
-                                        <thead>
-                                            <tr>
-                                                <th>이름</th>
-                                                <th>점수</th>
-                                                <th>평가</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for _, row in results.top5.iterrows() %}
-                                                <tr>
-                                                    <td>{{ row.get('name', '지원자 ' + row.index|string) }}</td>
-                                                    <td>{{ "%.4f"|format(row.score) }}</td>
-                                                    <td>{{ row.evaluation.split(':')[0] }}</td>
-                                                </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
+                        <div class="card mb-4">
+                            <div class="card-header">상위 5명 지원자</div>
+                            <div class="card-body">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>이름</th>
+                                            <th>점수</th>
+                                            <th>평가</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for _, row in results.top5.iterrows() %}
+                                        <tr>
+                                            <td>{{ row.get('name', '지원자 ' + row.index|string) }}</td>
+                                            <td>
+                                                {% if 'final_score' in row %}
+                                                    {{ "%.2f"|format(row.final_score) }}
+                                                {% elif 'display_score' in row %}
+                                                    {{ "%.2f"|format(row.display_score) }}
+                                                {% else %}
+                                                    {{ "%.2f"|format(row.score) }}
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ row.evaluation.split(':')[0] }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
+                        </div>
                         {% endif %}
                         
                         <div class="card mb-4">
@@ -95,11 +103,11 @@
                             <div class="card-body">
                                 <p>전체 평가 결과를 CSV 파일로 다운로드할 수 있습니다.</p>
                                 {% if results.result_path %}
-                                    <a href="{{ url_for('download_file', filename=results.result_path.split('/')[-1]) }}" class="btn btn-primary">
-                                        <i class="bi bi-download"></i> 결과 다운로드
-                                    </a>
+                                <a href="{{ url_for('download_file', filename=results.result_path.split('/')[-1]) }}" class="btn btn-primary">
+                                    <i class="bi bi-download"></i> 결과 다운로드
+                                </a>
                                 {% else %}
-                                    <button class="btn btn-secondary disabled">다운로드 불가</button>
+                                <button class="btn btn-secondary disabled">다운로드 불가</button>
                                 {% endif %}
                             </div>
                         </div>
@@ -110,9 +118,9 @@
                             <div class="card-header">점수 분포 시각화</div>
                             <div class="card-body text-center">
                                 {% if results.plot_path %}
-                                    <img src="{{ url_for('static', filename=results.plot_path) }}" alt="점수 분포" class="img-fluid">
+                                <img src="{{ url_for('static', filename=results.plot_path) }}" alt="점수 분포" class="img-fluid">
                                 {% else %}
-                                    <p>시각화를 표시할 수 없습니다.</p>
+                                <p>시각화를 표시할 수 없습니다.</p>
                                 {% endif %}
                             </div>
                         </div>
@@ -120,45 +128,84 @@
                 </div>
                 
                 {% if results.results_df is defined and results.results_df|length > 0 %}
-                    <div class="mt-4">
-                        <h4>모든 지원자 평가 결과</h4>
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>이름</th>
-                                        {% if 'email' in results.results_df.columns %}
-                                            <th>이메일</th>
+                <div class="mt-4">
+                    <h4>모든 지원자 평가 결과</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>이름</th>
+                                    {% if 'email' in results.results_df.columns %}
+                                    <th>이메일</th>
+                                    {% endif %}
+                                    {% if 'status' in results.results_df.columns %}
+                                    <th>상태</th>
+                                    {% endif %}
+                                    <th>점수</th>
+                                    <th>학률</th>
+                                    <th>평가</th>
+                                    <th>추천</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for _, row in paginated_results.iterrows() %}
+                                <tr>
+                                    <td>{{ row.get('name', '지원자 ' + row.index|string) }}</td>
+                                    {% if 'email' in results.results_df.columns %}
+                                    <td>{{ row.get('email', '') }}</td>
+                                    {% endif %}
+                                    {% if 'status' in results.results_df.columns %}
+                                    <td>{{ row.get('status', '') }}</td>
+                                    {% endif %}
+                                    <td>
+                                        {% if 'final_score' in row %}
+                                            {{ "%.2f"|format(row.final_score) }}
+                                        {% elif 'display_score' in row %}
+                                            {{ "%.2f"|format(row.display_score) }}
+                                        {% else %}
+                                            {{ "%.2f"|format(row.score) }}
                                         {% endif %}
-                                        {% if 'status' in results.results_df.columns %}
-                                            <th>상태</th>
-                                        {% endif %}
-                                        <th>점수</th>
-                                        <th>확률</th>
-                                        <th>평가</th>
-                                        <th>추천</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for _, row in results.results_df.iterrows() %}
-                                        <tr {% if row.score >= threshold %}class="table-success"{% endif %}>
-                                            <td>{{ row.get('name', '지원자 ' + row.index|string) }}</td>
-                                            {% if 'email' in results.results_df.columns %}
-                                                <td>{{ row.get('email', '') }}</td>
-                                            {% endif %}
-                                            {% if 'status' in results.results_df.columns %}
-                                                <td>{{ row.get('status', '') }}</td>
-                                            {% endif %}
-                                            <td>{{ "%.4f"|format(row.score) }}</td>
-                                            <td>{{ "%.4f"|format(row.rf_probability) }}</td>
-                                            <td>{{ row.evaluation }}</td>
-                                            <td>{{ row.recommendation }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+                                    </td>
+                                    <td>{{ "%.2f"|format(row.rf_probability) }}</td>
+                                    <td>{{ row.evaluation }}</td>
+                                    <td>{{ row.recommendation }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        
+                        <!-- 페이지네이션 추가 -->
+                        <nav aria-label="평가 결과 페이지네이션">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item {% if page == 1 %}disabled{% endif %}">
+                                    <a class="page-link" href="{{ url_for('evaluation_results', result_id=result_id, page=page-1) if page > 1 else '#' }}" aria-label="이전">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                
+                                {% set start_page = [page - 2, 1]|max %}
+                                {% set end_page = [start_page + 4, total_pages]|min %}
+                                {% set start_page = [end_page - 4, 1]|max %}
+                                
+                                {% for p in range(start_page, end_page + 1) %}
+                                <li class="page-item {% if p == page %}active{% endif %}">
+                                    <a class="page-link" href="{{ url_for('evaluation_results', result_id=result_id, page=p) }}">{{ p }}</a>
+                                </li>
+                                {% endfor %}
+                                
+                                <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+                                    <a class="page-link" href="{{ url_for('evaluation_results', result_id=result_id, page=page+1) if page < total_pages else '#' }}" aria-label="다음">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                        
+                        <p class="text-center text-muted">
+                            총 {{ results.total_count }}명 중 {{ (page-1) * per_page + 1 }}~{{ min(page * per_page, results.total_count) }}명 표시
+                        </p>
                     </div>
+                </div>
                 {% endif %}
                 
                 <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-4">
